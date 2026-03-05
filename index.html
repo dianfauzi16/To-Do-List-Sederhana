@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo List App - VibeCoding</title>
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="app-header">
+        <div class="app-title-group">
+          <h1 class="app-title">Todo List</h1>
+          <p class="app-subtitle">
+            Kelola tugas harianmu dengan tampilan modern dan rapi.
+          </p>
+        </div>
+      </header>
+
+      <main class="app-main">
+        <section class="task-input-section">
+          <div class="task-input-card">
+            <label class="task-input-label" for="task-input">
+              Tambah tugas baru
+            </label>
+            <div class="task-input-group">
+              <input
+                id="task-input"
+                type="text"
+                class="task-input"
+                placeholder="Contoh: Belajar JavaScript selama 30 menit"
+                autocomplete="off"
+              />
+              <button id="add-task-btn" class="btn btn-primary">
+                <span class="btn-icon">+</span>
+                <span>Tambah</span>
+              </button>
+            </div>
+            <p id="task-error" class="task-error" aria-live="polite"></p>
+          </div>
+        </section>
+
+        <section class="progress-section">
+          <div class="progress-card">
+            <div class="progress-header">
+              <span class="progress-title">Progress Produktivitas</span>
+              <span id="progress-percentage" class="progress-percentage"
+                >0%</span
+              >
+            </div>
+            <div class="progress-bar-wrapper">
+              <div class="progress-bar-bg">
+                <div id="progress-bar-fill" class="progress-bar-fill"></div>
+              </div>
+            </div>
+            <p id="progress-summary" class="progress-summary">
+              0 dari 0 tugas selesai.
+            </p>
+          </div>
+        </section>
+
+        <section class="tasks-section">
+          <div class="tasks-card">
+            <div class="tasks-header">
+              <h2 class="tasks-title">Daftar Tugas</h2>
+              <p class="tasks-hint">
+                Seret kartu tugas untuk mengubah urutan. Klik dua kali teks
+                tugas untuk mengedit.
+              </p>
+            </div>
+            <ul id="task-list" class="task-list"></ul>
+          </div>
+        </section>
+      </main>
+
+      <footer class="app-footer">
+        <p>
+          Data tugas disimpan otomatis di browser menggunakan
+          <span class="tag">localStorage</span>.
+        </p>
+      </footer>
+    </div>
+
+    <!-- Urutan script penting:
+         1. storage.js  -> fungsi simpan/ambil localStorage
+         2. ui.js       -> fungsi manipulasi DOM
+         3. dragdrop.js -> fungsi drag and drop
+         4. app.js      -> logika utama yang menggunakan semuanya -->
+    <script src="./js/storage.js"></script>
+    <script src="./js/ui.js"></script>
+    <script src="./js/dragdrop.js"></script>
+    <script src="./js/app.js"></script>
+  </body>
+</html>
