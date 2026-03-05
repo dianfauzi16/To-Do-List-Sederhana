@@ -1,4 +1,4 @@
-# Todo List App - VibeCoding
+# Todo List App 
 
 Aplikasi **Todo List** sederhana dengan tampilan modern, drag and drop, dan penyimpanan data menggunakan `localStorage`.
 
