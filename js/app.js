@@ -11,7 +11,7 @@ let tasks = [];
 /**
  * Membuat objek task baru dengan struktur yang konsisten.
  */
-function createTask(title) {
+function createTask(title, studyTimeMinutes = 0) {
   const now = new Date().toISOString();
   return {
     id: Date.now().toString(), // ID unik berbasis timestamp
@@ -19,6 +19,10 @@ function createTask(title) {
     completed: false,
     createdAt: now,
     updatedAt: now,
+    studyTime: studyTimeMinutes * 60, // Waktu belajar dalam detik
+    timeRemaining: studyTimeMinutes * 60, // Waktu tersisa dalam detik
+    timerRunning: false, // Apakah timer sedang berjalan
+    timerStartTime: null, // Timestamp saat timer dimulai
   };
 }
 
@@ -36,13 +40,19 @@ function render() {
  */
 function handleAddTask() {
   const value = window.TodoUI.getTaskInputValue();
+  const studyTime = window.TodoUI.getStudyTimeValue();
 
   if (!value) {
     window.TodoUI.showInputError("Tugas tidak boleh kosong.");
     return;
   }
 
-  const newTask = createTask(value);
+  if (studyTime <= 0) {
+    window.TodoUI.showInputError("Waktu belajar harus lebih dari 0 menit.");
+    return;
+  }
+
+  const newTask = createTask(value, studyTime);
   tasks.unshift(newTask); // Masukkan di awal agar terlihat paling atas
 
   saveTasks(tasks);
@@ -64,6 +74,49 @@ function handleToggleComplete(taskId) {
         }
       : task
   );
+
+  saveTasks(tasks);
+  render();
+}
+
+/**
+ * Toggle timer untuk task tertentu (start countdown).
+ */
+function handleToggleTimer(taskId) {
+  const now = Date.now();
+  tasks = tasks.map((task) => {
+    if (task.id === taskId) {
+      if (task.timerRunning) {
+        // Stop timer - tidak perlu menghitung elapsed karena kita update setiap detik
+        return {
+          ...task,
+          timerRunning: false,
+          timerStartTime: null,
+          updatedAt: new Date().toISOString(),
+        };
+      } else {
+        // Start countdown timer
+        if (task.timeRemaining <= 0) {
+          // Reset ke waktu awal jika sudah habis
+          return {
+            ...task,
+            timerRunning: true,
+            timerStartTime: now,
+            timeRemaining: task.studyTime,
+            updatedAt: new Date().toISOString(),
+          };
+        } else {
+          return {
+            ...task,
+            timerRunning: true,
+            timerStartTime: now,
+            updatedAt: new Date().toISOString(),
+          };
+        }
+      }
+    }
+    return task;
+  });
 
   saveTasks(tasks);
   render();
@@ -190,6 +243,8 @@ function initEventListeners() {
       handleDeleteTask(taskId);
     } else if (action === "edit-task") {
       handleEditTask(taskId);
+    } else if (action === "toggle-timer") {
+      handleToggleTimer(taskId);
     }
   });
 
@@ -223,6 +278,57 @@ function initApp() {
   tasks = loadTasks();
   render();
   initEventListeners();
+
+  // Update timer setiap detik untuk task yang sedang berjalan
+  setInterval(() => {
+    let needsRender = false;
+    let completedTasks = [];
+
+    tasks = tasks.map((task) => {
+      if (task.timerRunning && task.timeRemaining > 0) {
+        const newRemaining = task.timeRemaining - 1;
+
+        if (newRemaining === 0) {
+          // Timer selesai - auto-complete task
+          completedTasks.push(task.title);
+          return {
+            ...task,
+            timeRemaining: 0,
+            timerRunning: false,
+            timerStartTime: null,
+            completed: true, // Auto-complete!
+            updatedAt: new Date().toISOString(),
+          };
+        }
+
+        needsRender = true;
+        return {
+          ...task,
+          timeRemaining: Math.max(0, newRemaining),
+          timerRunning: newRemaining > 0, // Stop otomatis jika habis
+          timerStartTime: newRemaining > 0 ? task.timerStartTime : null,
+          updatedAt: new Date().toISOString(),
+        };
+      }
+      return task;
+    });
+
+    if (needsRender) {
+      render();
+    }
+
+    // Notifikasi untuk task yang selesai
+    completedTasks.forEach(title => {
+      setTimeout(() => {
+        alert(`Waktu belajar untuk "${title}" telah selesai! 🎉`);
+      }, 100);
+    });
+
+    if (completedTasks.length > 0) {
+      render(); // Render ulang untuk menampilkan task yang sudah ter-checklist
+      saveTasks(tasks);
+    }
+  }, 1000);
 }
 
 // Jalankan aplikasi ketika DOM siap

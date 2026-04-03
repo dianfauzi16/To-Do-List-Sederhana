@@ -147,6 +147,7 @@ body {
 .task-input-group {
   display: flex;
   gap: 10px;
+  align-items: center;
 }
 
 .task-input {
@@ -161,6 +162,33 @@ body {
   transition: border-color var(--transition-fast),
     box-shadow var(--transition-fast), background var(--transition-fast),
     transform 0.1s ease-out;
+}
+
+.study-time-input {
+  width: 120px;
+  padding: 11px 13px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.9);
+  color: var(--text-main);
+  font-size: 0.94rem;
+  outline: none;
+  transition: border-color var(--transition-fast),
+    box-shadow var(--transition-fast), background var(--transition-fast),
+    transform 0.1s ease-out;
+}
+
+.study-time-input::placeholder {
+  color: rgba(148, 163, 184, 0.8);
+}
+
+.study-time-input:focus {
+  border-color: rgba(129, 140, 248, 0.95);
+  box-shadow:
+    0 0 0 1px rgba(129, 140, 248, 0.9),
+    0 18px 40px rgba(15, 23, 42, 0.95);
+  background: #020617;
+  transform: translateY(-1px);
 }
 
 .task-input::placeholder {
@@ -458,6 +486,17 @@ body {
   color: var(--text-muted);
 }
 
+.task-timer {
+  font-size: 0.74rem;
+  color: var(--accent);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.task-timer.timer-finished {
+  color: var(--danger);
+}
+
 .task-actions {
   display: flex;
   gap: 4px;
@@ -516,6 +555,24 @@ body {
   background: rgba(127, 29, 29, 0.22);
   box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.65);
   transform: translateY(-1px);
+}
+
+.btn-timer-stopped {
+  border-color: rgba(156, 163, 175, 0.85);
+  color: rgba(156, 163, 175, 0.96);
+}
+
+.btn-timer-stopped:hover {
+  background: rgba(75, 85, 99, 0.22);
+  box-shadow: 0 0 0 1px rgba(156, 163, 175, 0.6);
+  transform: translateY(-1px);
+}
+
+.btn-timer-running {
+  border-color: rgba(34, 197, 94, 0.9);
+  color: rgba(34, 197, 94, 0.96);
+  background: rgba(22, 163, 74, 0.16);
+  box-shadow: 0 0 0 1px rgba(22, 163, 74, 0.6);
 }
 
 .task-item.completed {

@@ -3,6 +3,7 @@
 
 // Ambil referensi elemen utama sekali saja di awal
 const taskInput = document.getElementById("task-input");
+const studyTimeInput = document.getElementById("study-time-input");
 const addTaskBtn = document.getElementById("add-task-btn");
 const taskList = document.getElementById("task-list");
 const taskError = document.getElementById("task-error");
@@ -17,6 +18,7 @@ const progressSummary = document.getElementById("progress-summary");
  */
 const uiElements = {
   taskInput,
+  studyTimeInput,
   addTaskBtn,
   taskList,
 };
@@ -42,10 +44,19 @@ function getTaskInputValue() {
 }
 
 /**
+ * Mengambil nilai waktu belajar dari input (dalam menit).
+ */
+function getStudyTimeValue() {
+  const value = parseInt(studyTimeInput.value.trim());
+  return isNaN(value) || value <= 0 ? 0 : value;
+}
+
+/**
  * Mengosongkan input task dan fokus kembali ke input.
  */
 function clearTaskInput() {
   taskInput.value = "";
+  studyTimeInput.value = "";
   taskInput.focus();
 }
 
@@ -79,6 +90,11 @@ function createIcon(type) {
     path.setAttribute(
       "d",
       "M10 4h4v2h-4zm0 7h4v2h-4zm0 7h4v2h-4z"
+    );
+  } else if (type === "timer") {
+    path.setAttribute(
+      "d",
+      "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z"
     );
   }
 
@@ -130,8 +146,13 @@ function createTaskElement(task) {
   dateEl.className = "task-date";
   dateEl.textContent = formatDate(task.createdAt);
 
+  const timerEl = document.createElement("span");
+  timerEl.className = `task-timer ${task.timeRemaining === 0 ? 'timer-finished' : ''}`;
+  timerEl.textContent = formatTime(task.timeRemaining);
+
   meta.appendChild(textEl);
   meta.appendChild(dateEl);
+  meta.appendChild(timerEl);
 
   content.appendChild(checkbox);
   content.appendChild(meta);
@@ -144,6 +165,12 @@ function createTaskElement(task) {
   completeBtn.type = "button";
   completeBtn.setAttribute("data-action", "toggle-complete");
   completeBtn.appendChild(createIcon("check"));
+
+  const timerBtn = document.createElement("button");
+  timerBtn.className = `btn-icon-small ${task.timerRunning ? 'btn-timer-running' : 'btn-timer-stopped'}`;
+  timerBtn.type = "button";
+  timerBtn.setAttribute("data-action", "toggle-timer");
+  timerBtn.appendChild(createIcon("timer"));
 
   const editBtn = document.createElement("button");
   editBtn.className = "btn-icon-small btn-edit";
@@ -158,6 +185,7 @@ function createTaskElement(task) {
   deleteBtn.appendChild(createIcon("trash"));
 
   actions.appendChild(completeBtn);
+  actions.appendChild(timerBtn);
   actions.appendChild(editBtn);
   actions.appendChild(deleteBtn);
 
@@ -236,11 +264,22 @@ function formatDate(isoString) {
   }).format(date);
 }
 
+/**
+ * Format waktu dalam detik menjadi HH:MM:SS.
+ */
+function formatTime(seconds) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
 // "Ekspor" fungsi yang dibutuhkan ke global agar bisa diakses app.js
 window.TodoUI = {
   uiElements,
   showInputError,
   getTaskInputValue,
+  getStudyTimeValue,
   clearTaskInput,
   renderTaskList,
   updateProgressBar,

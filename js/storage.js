@@ -13,7 +13,20 @@ function loadTasks() {
 
   try {
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+
+    // Migrasi: tambahkan properti timer jika belum ada
+    return parsed.map(task => ({
+      id: task.id,
+      title: task.title,
+      completed: task.completed || false,
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt || task.createdAt,
+      studyTime: task.studyTime || (task.timeSpent ? task.timeSpent : 0), // Gunakan timeSpent lama sebagai studyTime
+      timeRemaining: task.timeRemaining || (task.timeSpent ? task.timeSpent : 0), // Atau timeSpent jika ada
+      timerRunning: task.timerRunning || false,
+      timerStartTime: task.timerStartTime || null,
+    }));
   } catch (error) {
     console.error("Gagal membaca data task dari localStorage:", error);
     return [];
