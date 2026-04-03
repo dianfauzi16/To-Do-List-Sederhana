@@ -237,6 +237,10 @@ body {
   grid-column: 1 / -1;
 }
 
+.tasks-section {
+  grid-column: 1 / -1;
+}
+
 .progress-card {
   background: linear-gradient(
       130deg,
@@ -304,9 +308,9 @@ body {
   );
   border-radius: var(--radius-lg);
   border: 1px solid rgba(148, 163, 184, 0.7);
-  padding: 12px 12px 8px;
+  padding: 12px 14px 10px;
   box-shadow: var(--shadow-card);
-  max-height: 420px;
+  max-height: auto;
   display: flex;
   flex-direction: column;
 }
